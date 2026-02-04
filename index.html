@@ -14,7 +14,7 @@
             background-color: #ffeef2;
             font-family: 'Arial', sans-serif;
             text-align: center;
-            overflow: hidden;
+            overflow: hidden; /* Prevents scrollbars when button moves */
         }
         .container {
             background: white;
@@ -22,10 +22,17 @@
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             z-index: 10;
-            position: relative;
         }
         h1 { color: #d63384; margin-bottom: 2rem; }
-        .buttons { display: flex; justify-content: center; gap: 20px; align-items: center; height: 50px; }
+        
+        .buttons { 
+            display: flex; 
+            justify-content: center; 
+            gap: 20px; 
+            align-items: center; 
+            height: 60px;
+            position: relative; /* Keeps button contained initially */
+        }
         
         button {
             padding: 15px 30px;
@@ -37,24 +44,28 @@
         }
  
         #yesBtn { background-color: #ff4d6d; color: white; transition: transform 0.2s; }
-        #noBtn { background-color: #adb5bd; color: white; position: absolute; transition: 0.1s; }
+        
+        /* Initial state is static so it stays beside "Yes" */
+        #noBtn { 
+            background-color: #adb5bd; 
+            color: white; 
+            position: relative; 
+        }
  
         .success-msg { display: none; font-size: 2rem; color: #ff4d6d; }
-        img { width: 200px; border-radius: 10px; margin-bottom: 10px; }
+        img { width: 250px; border-radius: 10px; margin-bottom: 10px; }
         #player { display: none; }
  
-        /* Floating Hearts Animation */
         .heart {
             position: absolute;
             color: #ff4d6d;
             font-size: 20px;
-            user-select: none;
             animation: float 4s linear infinite;
             top: 100vh;
         }
         @keyframes float {
             0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+            100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
         }
     </style>
 </head>
@@ -65,7 +76,7 @@
     <div class="container" id="mainContainer">
         <img src="GIF_20250812_125217_096.gif" alt="Cute Cat">
         <h1>Ahoda, will you be my valentine?</h1>
-        <p style="font-size: 0.8rem; color: #aaa;">(Click anywhere to start music)</p>
+        <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 10px;">(Click anywhere to start music)</p>
         <div class="buttons">
             <button id="yesBtn">Yes</button>
             <button id="noBtn">No</button>
@@ -78,7 +89,7 @@
     </div>
  
     <script>
-        // 1. YouTube API Setup
+        // 1. YouTube API
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -89,14 +100,12 @@
  
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
-                height: '0',
-                width: '0',
+                height: '0', width: '0',
                 videoId: 'NCHTeUE-tnk', 
                 playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': 'NCHTeUE-tnk' }
             });
         }
  
-        // 2. Start music on first interaction
         function startMusic() {
             if (!hasStarted && player && player.playVideo) {
                 player.playVideo();
@@ -104,28 +113,36 @@
             }
         }
  
-        // 3. Button Logic
+        // 2. Button Logic
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
         const mainContainer = document.getElementById('mainContainer');
         const successMsg = document.getElementById('successMsg');
  
         noBtn.addEventListener('mouseover', () => {
-            const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
-            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
-            noBtn.style.left = `${x}px`;
-            noBtn.style.top = `${y}px`;
+            // Switch to absolute positioning so it can fly anywhere
+            noBtn.style.position = 'absolute';
+ 
+            // Calculate safe boundaries (window size minus button size)
+            const maxX = window.innerWidth - noBtn.offsetWidth - 20;
+            const maxY = window.innerHeight - noBtn.offsetHeight - 20;
+ 
+            // Generate random positions within the visible screen
+            const randomX = Math.max(10, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(10, Math.floor(Math.random() * maxY));
+ 
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
         });
  
         yesBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevents double-triggering startMusic
+            e.stopPropagation();
             mainContainer.style.display = 'none';
             successMsg.style.display = 'block';
             startMusic();
-            setInterval(createHeart, 300); // Start the heart shower!
+            setInterval(createHeart, 300);
         });
  
-        // 4. Heart Animation Logic
         function createHeart() {
             const heart = document.createElement('div');
             heart.classList.add('heart');
