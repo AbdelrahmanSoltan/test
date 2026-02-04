@@ -14,7 +14,7 @@
             background-color: #ffeef2;
             font-family: 'Arial', sans-serif;
             text-align: center;
-            overflow: hidden; /* Prevents scrollbars when button moves */
+            overflow: hidden;
         }
         .container {
             background: white;
@@ -22,6 +22,7 @@
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             z-index: 10;
+            max-width: 80%;
         }
         h1 { color: #d63384; margin-bottom: 2rem; }
         
@@ -30,8 +31,7 @@
             justify-content: center; 
             gap: 20px; 
             align-items: center; 
-            height: 60px;
-            position: relative; /* Keeps button contained initially */
+            min-height: 150px; /* Space for the growing button */
         }
         
         button {
@@ -41,16 +41,11 @@
             border-radius: 10px;
             cursor: pointer;
             z-index: 20;
+            transition: transform 0.2s ease-out; /* Smooth scaling */
         }
  
-        #yesBtn { background-color: #ff4d6d; color: white; transition: transform 0.2s; }
-        
-        /* Initial state is static so it stays beside "Yes" */
-        #noBtn { 
-            background-color: #adb5bd; 
-            color: white; 
-            position: relative; 
-        }
+        #yesBtn { background-color: #ff4d6d; color: white; position: relative; }
+        #noBtn { background-color: #adb5bd; color: white; position: relative; }
  
         .success-msg { display: none; font-size: 2rem; color: #ff4d6d; }
         img { width: 250px; border-radius: 10px; margin-bottom: 10px; }
@@ -76,7 +71,6 @@
     <div class="container" id="mainContainer">
         <img src="GIF_20250812_125217_096.gif" alt="Cute Cat">
         <h1>Ahoda, will you be my valentine?</h1>
-        <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 10px;">(Click anywhere to start music)</p>
         <div class="buttons">
             <button id="yesBtn">Yes</button>
             <button id="noBtn">No</button>
@@ -89,7 +83,7 @@
     </div>
  
     <script>
-        // 1. YouTube API
+        // 1. YouTube Player API
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -101,7 +95,7 @@
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
                 height: '0', width: '0',
-                videoId: 'NCHTeUE-tnk', 
+                videoId: 'NCHTeUE-tnk', // REPLACE WITH YOUR VIDEO ID
                 playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': 'NCHTeUE-tnk' }
             });
         }
@@ -113,23 +107,32 @@
             }
         }
  
-        // 2. Button Logic
+        // 2. Scaling & Movement Logic
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
         const mainContainer = document.getElementById('mainContainer');
         const successMsg = document.getElementById('successMsg');
  
+        let yesScale = 1;
+        let noScale = 1;
+ 
         noBtn.addEventListener('mouseover', () => {
-            // Switch to absolute positioning so it can fly anywhere
+            // Shrink No, Grow Yes
+            noScale -= 0.1;
+            yesScale += 0.2;
+ 
+            if (noScale < 0.2) noScale = 0.2; // Don't let it disappear completely
+ 
+            noBtn.style.transform = `scale(${noScale})`;
+            yesBtn.style.transform = `scale(${yesScale})`;
+ 
+            // Move No Button randomly
             noBtn.style.position = 'absolute';
+            const maxX = window.innerWidth - noBtn.offsetWidth - 50;
+            const maxY = window.innerHeight - noBtn.offsetHeight - 50;
  
-            // Calculate safe boundaries (window size minus button size)
-            const maxX = window.innerWidth - noBtn.offsetWidth - 20;
-            const maxY = window.innerHeight - noBtn.offsetHeight - 20;
- 
-            // Generate random positions within the visible screen
-            const randomX = Math.max(10, Math.floor(Math.random() * maxX));
-            const randomY = Math.max(10, Math.floor(Math.random() * maxY));
+            const randomX = Math.max(50, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(50, Math.floor(Math.random() * maxY));
  
             noBtn.style.left = randomX + 'px';
             noBtn.style.top = randomY + 'px';
