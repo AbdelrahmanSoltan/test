@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Be My Valentine?</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #ffeef2;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+        }
+        .container {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        h1 { color: #d63384; margin-bottom: 2rem; }
+        .buttons { display: flex; justify-content: center; gap: 20px; align-items: center; }
+        
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+ 
+        #yesBtn { background-color: #ff4d6d; color: white; }
+        
+        #noBtn {
+            background-color: #adb5bd;
+            color: white;
+            position: absolute; /* This allows it to move freely */
+        }
+ 
+        .success-msg { display: none; font-size: 2rem; color: #ff4d6d; }
+        img { width: 150px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+ 
+    <div class="container" id="mainContainer">
+        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueG51Ym0ybXpueG51Ym0ybXpueG51Ym0ybXpueG51Ym0mZXA9djFfaW50ZXJuYWxfZ2lmX2J5X2lkJmN0PXM/3o7TKoWXlo3M1nKS6A/giphy.gif" alt="Cute Cat">
+        <h1 id="question">Ahoda, will you be my valentine?</h1>
+        <div class="buttons">
+            <button id="yesBtn">Yes</button>
+            <button id="noBtn">No</button>
+        </div>
+    </div>
+ 
+    <div class="success-msg" id="successMsg">
+        <h1>YAY! 🎉</h1>
+        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueG51Ym0ybXpueG51Ym0ybXpueG51Ym0ybXpueG51Ym0mZXA9djFfaW50ZXJuYWxfZ2lmX2J5X2lkJmN0PXM/l41lTfuxV5WXpL6Ks/giphy.gif">
+    </div>
+ 
+    <script>
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const mainContainer = document.getElementById('mainContainer');
+        const successMsg = document.getElementById('successMsg');
+ 
+        // Logic to move the "No" button
+        noBtn.addEventListener('mouseover', () => {
+            const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+            
+            noBtn.style.left = `${x}px`;
+            noBtn.style.top = `${y}px`;
+        });
+ 
+        // Logic for when "Yes" is clicked
+        yesBtn.addEventListener('click', () => {
+            mainContainer.style.display = 'none';
+            successMsg.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
+ 
