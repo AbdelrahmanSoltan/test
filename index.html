@@ -22,6 +22,7 @@
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             z-index: 10;
+            position: relative;
         }
         h1 { color: #d63384; margin-bottom: 2rem; }
         .buttons { display: flex; justify-content: center; gap: 20px; align-items: center; height: 50px; }
@@ -32,30 +33,39 @@
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            transition: transform 0.2s;
+            z-index: 20;
         }
  
-        #yesBtn { background-color: #ff4d6d; color: white; }
-        
-        #noBtn {
-            background-color: #adb5bd;
-            color: white;
-            position: absolute;
-            transition: 0.1s;
-        }
+        #yesBtn { background-color: #ff4d6d; color: white; transition: transform 0.2s; }
+        #noBtn { background-color: #adb5bd; color: white; position: absolute; transition: 0.1s; }
  
         .success-msg { display: none; font-size: 2rem; color: #ff4d6d; }
         img { width: 200px; border-radius: 10px; margin-bottom: 10px; }
-        #player { display: none; } /* Hides the YouTube video */
+        #player { display: none; }
+ 
+        /* Floating Hearts Animation */
+        .heart {
+            position: absolute;
+            color: #ff4d6d;
+            font-size: 20px;
+            user-select: none;
+            animation: float 4s linear infinite;
+            top: 100vh;
+        }
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
     </style>
 </head>
-<body>
+<body onclick="startMusic()">
  
     <div id="player"></div>
  
     <div class="container" id="mainContainer">
         <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueG51Ym0ybXpueG51Ym0ybXpueG51Ym0ybXpueG51Ym0mZXA9djFfaW50ZXJuYWxfZ2lmX2J5X2lkJmN0PXM/3o7TKoWXlo3M1nKS6A/giphy.gif" alt="Cute Cat">
-        <h1 id="question">Ahoda, will you be my valentine?</h1>
+        <h1>Nirali, will you be my valentine?</h1>
+        <p style="font-size: 0.8rem; color: #aaa;">(Click anywhere to start music)</p>
         <div class="buttons">
             <button id="yesBtn">Yes</button>
             <button id="noBtn">No</button>
@@ -63,39 +73,43 @@
     </div>
  
     <div class="success-msg" id="successMsg">
-        <h1>YAY! 🎉</h1>
-        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueG51Ym0ybXpueG51Ym0ybXpueG51Ym0ybXpueG51Ym0mZXA9djFfaW50ZXJuYWxfZ2lmX2J5X2lkJmN0PXM/l41lTfuxV5WXpL6Ks/giphy.gif">
+        <h1>بحبك ❤️</h1>
+        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueG51Ym0ybXpueG51Ym0ybXpueG51Ym0mZXA9djFfaW50ZXJuYWxfZ2lmX2J5X2lkJmN0PXM/l41lTfuxV5WXpL6Ks/giphy.gif">
     </div>
  
     <script>
-        // 1. Load the YouTube IFrame Player API code asynchronously.
+        // 1. YouTube API Setup
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
  
         var player;
+        var hasStarted = false;
+ 
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
                 height: '0',
                 width: '0',
-                videoId: 'NCHTeUE-tnk', // REPLACE THIS WITH YOUR VIDEO ID
-                events: {
-                    'onReady': onPlayerReady
-                }
+                videoId: 'NCHTeUE-tnk', 
+                playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': 'NCHTeUE-tnk' }
             });
         }
  
-        function onPlayerReady(event) {
-            // Player is ready, but we wait for the click to play
+        // 2. Start music on first interaction
+        function startMusic() {
+            if (!hasStarted && player && player.playVideo) {
+                player.playVideo();
+                hasStarted = true;
+            }
         }
  
+        // 3. Button Logic
         const noBtn = document.getElementById('noBtn');
         const yesBtn = document.getElementById('yesBtn');
         const mainContainer = document.getElementById('mainContainer');
         const successMsg = document.getElementById('successMsg');
  
-        // Move the "No" button
         noBtn.addEventListener('mouseover', () => {
             const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
             const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
@@ -103,16 +117,24 @@
             noBtn.style.top = `${y}px`;
         });
  
-        // "Yes" click event
-        yesBtn.addEventListener('click', () => {
+        yesBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevents double-triggering startMusic
             mainContainer.style.display = 'none';
             successMsg.style.display = 'block';
-            
-            // Play the music!
-            if (player && player.playVideo) {
-                player.playVideo();
-            }
+            startMusic();
+            setInterval(createHeart, 300); // Start the heart shower!
         });
+ 
+        // 4. Heart Animation Logic
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = Math.random() * 2 + 3 + 's';
+            document.body.appendChild(heart);
+            setTimeout(() => { heart.remove(); }, 5000);
+        }
     </script>
 </body>
 </html>
