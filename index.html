@@ -47,9 +47,38 @@
         #yesBtn { background-color: #ff4d6d; color: white; position: relative; }
         #noBtn { background-color: #adb5bd; color: white; position: relative; }
  
-        .success-msg { display: none; font-size: 2rem; color: #ff4d6d; }
-        img { width: 250px; border-radius: 10px; margin-bottom: 10px; }
+        .success-msg { 
+            display: none; 
+            color: #ff4d6d; 
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+ 
+        /* Here is where you control the Success Image size */
+        .success-msg img { 
+            width: auto; 
+            max-height: 60vh; /* Takes up 60% of the screen height */
+            max-width: 90vw;  /* Ensures it doesn't go off the sides of a phone */
+            border-radius: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+ 
+        .success-msg h1 {
+            font-size: 3rem;
+            margin-top: 10px;
+        }
+ 
+        /* Initial Asking Image Size */
+        #mainContainer img { 
+            width: 250px; 
+            border-radius: 10px; 
+        }
+ 
         #player { display: none; }
+ 
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
  
         .heart {
             position: absolute;
@@ -79,7 +108,7 @@
     </div>
  
     <div class="success-msg" id="successMsg">
-        <h1>I LOVE YOU ❤️</h1>
+        <h1>LOVE YOU ❤️</h1>
         <img src="IMG_20260131_001119_844.webp">
     </div>
  
